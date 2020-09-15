@@ -11,10 +11,30 @@ class MoviesController < ApplicationController
   end
 
   def index
-    column = params[:sort] || "title"
+    # @movies = Movie.all()
+    column = params[:sort] 
     @title_header = column == "title" ? "hilite" : nil
     @release_header = column == "release_date" ? "hilite" : nil
     @movies = Movie.order(column)
+    if params[:ratings]
+      @movies = Movie.where(params[:ratings].present? ? {:rating => (params[:ratings].keys)} :{}).order(params[:sort])
+    end
+    @all_ratings = Movie.all_ratings
+    @ratings_select = []
+    if !params[:ratings].nil?
+      params[:ratings].each_key do |key|
+        @ratings_select << key
+      end
+    elsif
+      @ratings_select = @all_ratings
+    end
+    @set_ratings = params[:ratings]
+    if !@set_ratings
+      @set_ratings = Hash.new
+    end
+    
+    
+    
   end
 
   def new
