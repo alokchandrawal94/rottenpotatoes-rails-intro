@@ -12,29 +12,20 @@ class MoviesController < ApplicationController
 
   def index
     # @movies = Movie.all()
-    column = params[:sort] 
-    @title_header = column == "title" ? "hilite" : nil
-    @release_header = column == "release_date" ? "hilite" : nil
-    @movies = Movie.order(column)
-    if params[:ratings]
-      @movies = Movie.where(params[:ratings].present? ? {:rating => (params[:ratings].keys)} :{}).order(params[:sort])
+    column = params[:sort]
+    if column == nil
+      @movies = Movie.all
+    else  
+      @title_header = column == "title" ? "hilite" : nil
+      @release_header = column == "release_date" ? "hilite" : nil
+      @movies = Movie.order(column)
+    end 
+    
+    if params[:ratings] != nil
+      @filter_ratings = params[:ratings].keys
+      @movies = Movie.with_ratings(@filter_ratings)
     end
     @all_ratings = Movie.all_ratings
-    @ratings_select = []
-    if !params[:ratings].nil?
-      params[:ratings].each_key do |key|
-        @ratings_select << key
-      end
-    elsif
-      @ratings_select = @all_ratings
-    end
-    @set_ratings = params[:ratings]
-    if !@set_ratings
-      @set_ratings = Hash.new
-    end
-    
-    
-    
   end
 
   def new
